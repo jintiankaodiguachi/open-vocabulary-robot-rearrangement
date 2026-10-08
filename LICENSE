@@ -1,0 +1,18 @@
+License scope notice
+====================
+
+The six ROS 2 packages under ros2_ws/src declare Apache-2.0 in their
+existing package.xml and setup.py metadata. This publication preserves
+those declarations. The Apache License, Version 2.0 text is available at:
+https://www.apache.org/licenses/LICENSE-2.0
+
+No repository-wide license has yet been selected for the remaining
+integration, camera-service, documentation, and deployment files. This
+notice does not grant an additional license to those files. The project
+author must confirm the intended scope before a repository-wide license
+is added.
+
+Grounded-SAM-2, GroundingDINO, SAM 2, GraspNet, the robot drivers, and
+their model weights are external dependencies with their own terms.
+Their licenses are not replaced by this notice or by ROS package
+metadata. See third_party/README.md for upstream references.

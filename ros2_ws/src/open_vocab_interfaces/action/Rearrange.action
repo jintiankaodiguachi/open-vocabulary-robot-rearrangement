@@ -1,0 +1,20 @@
+# Goal: one complete open-vocabulary tabletop rearrangement task.
+string source_query
+string destination_query
+bool verify_place
+bool use_pick_dry_run
+---
+# Result
+bool success
+string task_id
+string final_state
+string failure_stage
+string message
+float64 total_time_s
+---
+# Feedback
+string task_id
+string state
+float32 progress
+string message
+float64 elapsed_s

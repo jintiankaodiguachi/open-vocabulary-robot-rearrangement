@@ -1,0 +1,43 @@
+open_vocab_wrist_rgbd_localizer:
+  ros__parameters:
+    color_topic: /camera/camera/color/image_raw
+    depth_topic: /camera/camera/aligned_depth_to_color/image_raw
+    camera_info_topic: /camera/camera/color/camera_info
+    scene_topic: /open_vocab/scene_object
+    base_frame: base_link
+    camera_frame: camera_color_optical_frame
+    a6000_segment_url: http://ai-server.local:8090/api/v1/segment_uploaded
+    http_connect_timeout_s: 2.0
+    http_read_timeout_s: 30.0
+    jpeg_quality: 92
+    sync_queue_size: 10
+    sync_slop_s: 0.08
+    max_frame_age_s: 1.0
+    local_min_confidence: 0.35
+    center_distance_weight: 0.15
+    max_center_distance_norm: 0.85
+    mask_erode_px: 2
+    depth_min_m: 0.15
+    depth_max_m: 1.5
+    depth_percentile_low: 1.0
+    depth_percentile_high: 99.0
+    pixel_stride: 1
+    voxel_size_m: 0.003
+    min_cloud_points: 200
+    # Original development-environment example; measure the local table before use.
+    table_z: -0.031
+    scene_bbox_expand_px: 150
+    dense_scene_pixel_stride: 1
+    dense_scene_min_points: 12000
+    dense_scene_max_points: 120000
+    scene_depth_margin_near_m: 0.2
+    scene_depth_margin_far_m: 0.2
+    scene_voxel_size_m: 0.005
+    scene_min_points: 800
+    scene_base_z_min_offset_m: -0.025
+    scene_base_z_max_offset_m: 0.35
+    tf_timeout_s: 0.5
+    use_latest_tf_fallback: true
+    output_dir: /opt/open-vocabulary-robot-rearrangement/perception/local_outputs
+    auto_trigger: false
+    observation_done_topic: /open_vocab/observation_motion_done

@@ -1,0 +1,36 @@
+camera:
+  backend: hik_existing
+  # Set this to your camera's V4L2 device index or stable /dev/v4l/by-id path.
+  device: 0
+  use_v4l2: true
+
+  # Must match the image size used for Homography calibration.
+  width: 1280
+  height: 720
+  fps: 30
+  fourcc: MJPG
+
+  # Put your calibrated file in this directory.
+  intrinsic_file: camera_intrinsics.npz
+
+  # Set true when cap.read() returns the original distorted frame.
+  do_undistort: true
+
+  # Blank means use K itself as output camera matrix:
+  # cv2.undistort(frame, K, dist, None, K)
+  # If your Homography calibration used a stored newK, set e.g.:
+  # new_camera_matrix_key: newK
+  new_camera_matrix_key: ""
+
+  warmup_frames: 5
+
+image:
+  image_space_id: UNDISTORTED_1280x720
+  jpeg_quality: 90
+
+server:
+  host: 0.0.0.0
+  port: 8080
+
+runtime:
+  capture_error_sleep_s: 0.2

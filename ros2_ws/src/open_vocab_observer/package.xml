@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>open_vocab_observer</name>
+  <version>0.1.1</version>
+  <description>Open-vocabulary active observation pipeline for Kinova + wrist RGB-D camera.</description>
+  <maintainer email="robot@example.com">robot</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>shape_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>moveit_msgs</depend>
+  <depend>open_vocab_interfaces</depend>
+
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

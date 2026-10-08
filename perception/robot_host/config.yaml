@@ -1,0 +1,39 @@
+ai_service:
+  base_url: http://ai-server.local:8090
+  expected_image_space_id: UNDISTORTED_1280x720
+  expected_width: 1280
+  expected_height: 720
+  connect_timeout_s: 2.0
+  read_timeout_s: 20.0
+  retry_count: 1
+  retry_backoff_s: 0.25
+
+selection:
+  min_confidence: 0.50
+  min_mask_area_px: 300
+  reject_ambiguous: true
+  ambiguity_margin: 0.10
+
+homography:
+  configured: false
+  source: npy
+  # matrix:
+  #   - [1.0, 0.0, 0.0]
+  #   - [0.0, 1.0, 0.0]
+  #   - [0.0, 0.0, 1.0]
+  # Alternative:
+  # source: npy
+  npy_path: /opt/open-vocabulary-robot-rearrangement/perception/calibration/H_image_to_base.npy
+  image_space_id: UNDISTORTED_1280x720
+  output_frame: base_link
+  output_scale: 1.0
+  workspace: {}
+  # workspace:
+  #   x_min: 0.20
+  #   x_max: 0.80
+  #   y_min: -0.45
+  #   y_max: 0.45
+
+scene:
+  default_role: GRASPABLE
+  output_dir: ./outputs

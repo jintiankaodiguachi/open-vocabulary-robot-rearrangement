@@ -1,0 +1,117 @@
+open_vocab_scene_bridge:
+  ros__parameters:
+    scene_file: /opt/open-vocabulary-robot-rearrangement/perception/robot_host/outputs/latest_scene.json
+    poll_period_s: 0.20
+
+    # Do not move toward an old SceneObject automatically after startup.
+    publish_on_start: false
+    required_base_frame: base_link
+
+
+open_vocab_observation_pose:
+  ros__parameters:
+    # Set true only after confirming the table and camera-mount calibration locally.
+    geometry_configured: false
+
+    base_frame: base_link
+
+    # D435i is rigidly installed on this link.
+    # Observation control and grasp TCP are deliberately separated.
+    observation_link: spherical_wrist_2_link
+    camera_optical_frame: camera_color_optical_frame
+
+    # Original development-environment example; measure the local table before use.
+    table_z: -0.031
+    focus_z_offset: 0.03
+
+    # Keep the multi-view candidates.
+    # [dx, dy, camera_height_above_table]
+    candidate_offsets:
+      [ 0.00,  0.00, 0.50,
+       -0.12,  0.00, 0.48,
+        0.12,  0.00, 0.48,
+        0.00, -0.12, 0.48,
+        0.00,  0.12, 0.48 ]
+
+    min_camera_height_above_table: 0.30
+
+    tf_timeout_s: 1.0
+    tf_retry_period_s: 0.25
+
+    # Rigid camera-mount self-check.
+    rigid_tf_translation_tolerance_m: 0.002
+    rigid_tf_rotation_tolerance_deg: 1.0
+
+    # Desired optical +Z should point toward the target.
+    lookat_validation_min_dot: 0.995
+
+
+open_vocab_moveit_observer:
+  ros__parameters:
+    planning_group: observation_arm
+    base_frame: base_link
+    goal_link: spherical_wrist_2_link
+
+    move_group_action: /move_action
+    execute_trajectory_action: /execute_trajectory
+    observation_done_topic: /open_vocab/observation_motion_done
+    observation_status_topic: /open_vocab/observation_status
+    action_timeout_s: 15.0
+
+    planning_time: 5.0
+    planning_attempts: 5
+
+    velocity_scaling: 0.15
+    acceleration_scaling: 0.10
+
+    position_tolerance: 0.01
+    orientation_tolerance: 0.08
+
+    # Very small deterministic preference for lower-index candidates only when
+    # their actual motion quality is otherwise similar.
+    candidate_priority_penalty: 0.02
+
+    # ============================================================
+    # Motion-quality gate
+    # ============================================================
+    #
+    # The program evaluates EVERY planned waypoint, not just start/end.
+    # Therefore a real 270/360-degree intermediate rotation cannot be hidden.
+    enable_motion_quality_filter: true
+
+    # Reject if any one observation-arm joint accumulates more than this
+    # amount of physical travel over the full planned trajectory.
+    # 3.0 rad ~= 172 deg.
+    max_single_joint_cumulative_travel_rad: 3.0
+
+    # Reject if any joint deviates this far from its planning start state.
+    # 2.8 rad ~= 160 deg.
+    max_single_joint_excursion_rad: 2.8
+
+    # Reject globally over-complicated observation motions.
+    max_total_joint_travel_rad: 10.0
+
+    # Candidate scoring:
+    # score =
+    #   cumulative_travel_weight * weighted cumulative travel
+    # + endpoint_displacement_weight * weighted final displacement
+    # + candidate priority penalty
+    cumulative_travel_weight: 1.0
+    endpoint_displacement_weight: 0.25
+
+    # Higher weights discourage unnecessary wrist motion and cable twisting.
+    motion_quality_joint_names:
+      [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6]
+
+    motion_quality_joint_weights:
+      [1.10, 1.00, 1.00, 1.10, 1.50, 2.00]
+
+    # observation_arm plans joint_1..joint_6.
+    # The physical Kinova controller expects the full 7-joint trajectory.
+    # joint_7 is held at its current value by the execution adapter.
+    execution_joint_names:
+      [joint_1, joint_2, joint_3, joint_4, joint_5, joint_6, joint_7]
+
+    # FIRST RUN AFTER REPLACING THIS FILE:
+    # keep false and inspect the rejection logs / RViz trajectory.
+    execute_motion: false

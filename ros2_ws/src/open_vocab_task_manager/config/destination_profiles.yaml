@@ -1,0 +1,54 @@
+# V10.5 — Open-vocabulary destination semantics + generic calibrated place geometry
+#
+# IMPORTANT:
+#   This file is NOT a whitelist of destination classes.
+#   ANY non-empty destination_query is allowed, for example:
+#       glass bowl
+#       cardboard box
+#       brown cardboard box
+#       organizer
+#       plastic tray
+#       blue basket
+#
+# The raw destination text is forwarded to Grounded-SAM2 and localized online:
+#       text query -> mask centroid -> Homography -> base_link XY
+#
+# This file controls only PLACE GEOMETRY:
+#       rim height / XY calibration bias / release height / pre-place clearance
+#
+# For the current static-demo system, all ordinary receptacles reuse the
+# PlaceExecutor parameters loaded at system startup.  Therefore your successfully
+# tuned glass-bowl values in open_vocab_manipulation/config/place.yaml become the
+# generic default for unseen receptacles such as "cardboard box".
+#
+# Before launching V10.5, make sure the successful glass-bowl values are SAVED in
+# place.yaml, not only set transiently with `ros2 param set` in an old process.
+
+default:
+  # true = copy the five geometry parameters from PlaceExecutor's startup values.
+  inherit_place_baseline: true
+  require_explicit_geometry: false
+
+  # null means "use the startup PlaceExecutor baseline".
+  destination_rim_height_m: null
+  destination_xy_offset_x_m: null
+  destination_xy_offset_y_m: null
+  release_grasp_center_above_rim_m: null
+  preplace_clearance_m: null
+
+# Optional exceptions only.  Leave empty for the current demo.
+# Adding an override does NOT make other destination names invalid.
+overrides: {}
+
+# Example for a future receptacle whose geometry is genuinely different:
+# overrides:
+#   tall storage bin:
+#     aliases: ["tall bin"]
+#     query: "tall storage bin"
+#     inherit_place_baseline: true
+#     require_explicit_geometry: false
+#     destination_rim_height_m: 0.160
+#     destination_xy_offset_x_m: null
+#     destination_xy_offset_y_m: null
+#     release_grasp_center_above_rim_m: 0.060
+#     preplace_clearance_m: 0.120

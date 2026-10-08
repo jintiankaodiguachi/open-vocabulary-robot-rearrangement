@@ -1,0 +1,27 @@
+model:
+  repo_root: /opt/third_party/Grounded-SAM-2
+  sam2_checkpoint: checkpoints/sam2.1_hiera_large.pt
+  sam2_model_config: configs/sam2.1/sam2.1_hiera_l.yaml
+  grounding_dino_config: grounding_dino/groundingdino/config/GroundingDINO_SwinT_OGC.py
+  grounding_dino_checkpoint: gdino_checkpoints/groundingdino_swint_ogc.pth
+  device: cuda
+  box_threshold: 0.35
+  text_threshold: 0.25
+  multimask_output: false
+  support_band_ratio: 0.03
+  enable_tf32: true
+
+camera:
+  # Resolve this hostname to your RK3588, or set it in a local config copy.
+  latest_jpeg_url: http://camera-host.local:8080/api/v1/frame/latest.jpg
+  expected_image_space_id: UNDISTORTED_1280x720
+  expected_width: 1280
+  expected_height: 720
+  timeout_s: 3.0
+
+service:
+  host: 0.0.0.0
+  port: 8090
+
+output:
+  dir: outputs/open_vocab_service

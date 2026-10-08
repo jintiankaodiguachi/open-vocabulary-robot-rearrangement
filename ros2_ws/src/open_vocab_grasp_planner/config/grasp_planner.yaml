@@ -1,0 +1,111 @@
+open_vocab_grasp_plan:
+  ros__parameters:
+    # ==================== Input / A6000 ====================
+    # Change this to the real NPZ path produced by your wrist-local-perception node.
+    latest_npz_path: "/opt/open-vocabulary-robot-rearrangement/perception/local_outputs/latest_object_cloud.npz"
+
+    # IMPORTANT: this is the A6000 HOST LAN address, not the Docker 172.17.x.x address.
+    # The Docker container must be started with -p 8091:8091 or --network host.
+    grasp_server_url: "http://ai-server.local:8091/api/v1/grasp_npz"
+    grasp_server_timeout_s: 20.0
+    max_candidates_to_test: 10
+
+    # ==================== MoveIt ====================
+    base_frame: "base_link"
+    planning_group: "manipulator"
+    goal_link: "end_effector_link"
+
+    compute_ik_service: "/compute_ik"
+    motion_plan_service: "/plan_kinematic_path"
+    cartesian_path_service: "/compute_cartesian_path"
+    apply_planning_scene_service: "/apply_planning_scene"
+    get_planning_scene_service: "/get_planning_scene"
+    joint_states_topic: "/joint_states"
+
+    arm_joint_names:
+      - "joint_1"
+      - "joint_2"
+      - "joint_3"
+      - "joint_4"
+      - "joint_5"
+      - "joint_6"
+      - "joint_7"
+
+    planner_id: "RRTConnectkConfigDefault"
+    planning_attempts: 3
+    allowed_planning_time_s: 3.0
+    velocity_scaling: 0.10
+    acceleration_scaling: 0.10
+    # ROS 2 Humble PositionIKRequest has no `attempts` field.
+    # The KDL solver searches within this timeout using the current state as seed.
+    ik_timeout_s: 0.35
+
+    # ==================== Grasp frame -> EEF ====================
+    # GraspNet convention used in this project:
+    #   grasp X = approach
+    #   grasp Y = jaw/opening
+    #   grasp Z = binormal
+    # Default mapping makes goal-link +Z follow GraspNet approach.
+    # This MUST be visually verified in RViz before any real execution.
+    grasp_to_goal_rotation:
+      [0.0, 0.0, 1.0,
+       1.0, 0.0, 0.0,
+       0.0, 1.0, 0.0]
+
+    # Original development-environment example; measure the local tool geometry.
+    goal_link_to_grasp_center_m: 0.145
+
+    # Fast tabletop demo safety bias: translate both pregrasp and grasp 5 mm
+    # upward in base_link.  This protects closing-finger/table clearance without
+    # pretending the physical TCP/grasp-center distance is 150 mm.
+    grasp_vertical_safety_offset_m: 0.005
+
+    pregrasp_distance_m: 0.10
+    cartesian_max_step_m: 0.005
+    cartesian_jump_threshold: 0.0
+    min_cartesian_fraction: 0.98
+
+    # ==================== Hardware feasibility ====================
+    min_gripper_width_m: 0.005
+    max_gripper_width_m: 0.085
+    width_open_margin_m: 0.008
+
+    # Analytical guard using the PHYSICAL table top, in addition to MoveIt collision.
+    min_grasp_center_above_table_m: 0.015
+
+    # Prevent 270/360-degree-style joint-wrap solutions from winning.
+    max_single_joint_delta_rad: 2.80
+    max_joint_l1_delta_rad: 8.50
+    motion_cost_weight: 0.025
+
+    # This package intentionally contains no real execution path yet.
+    execution_enabled: false
+
+    # ==================== Table collision object ====================
+    add_table_collision: true
+    table_object_id: "grasp_table"
+    table_frame: "base_link"
+
+    # IMPORTANT:
+    # Use a work-surface rectangle that covers the object workspace but does NOT
+    # overlap the robot mounting pedestal. Measure and adjust these values.
+    # Default x-range = [0.12, 0.88] m, y-range = [-0.40, 0.40] m.
+    table_center_x_m: 0.50
+    table_center_y_m: 0.00
+    table_size_x_m: 0.76
+    table_size_y_m: 0.80
+    table_thickness_m: 0.04
+
+    # Original development-environment table example; measure locally.
+    # When table_use_npz_z=true, the latest NPZ value wins.
+    table_top_z_m: -0.031
+    table_use_npz_z: true
+
+    # Safety-first hardware demo: make the collision surface 2 mm ABOVE the
+    # measured physical table.  The implementation uses collision_top =
+    # physical_top - offset, therefore a negative value raises the collision plane.
+    table_collision_surface_offset_m: -0.002
+
+    # ==================== Output ====================
+    output_json_path: "/opt/open-vocabulary-robot-rearrangement/perception/grasp_plans/latest_grasp_plan.json"
+    marker_topic: "/open_vocab/grasp/markers"

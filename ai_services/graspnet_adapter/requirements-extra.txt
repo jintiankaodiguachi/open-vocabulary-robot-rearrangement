@@ -1,0 +1,3 @@
+-r requirements-runtime.txt
+# Also used by graspnetAPI / the official baseline collision detector.
+open3d>=0.8

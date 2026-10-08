@@ -1,0 +1,6 @@
+flask>=2.3,<4
+pyyaml>=6
+numpy>=1.23
+scipy>=1.8
+# Install PyTorch, graspnetAPI, and the baseline CUDA extensions in the
+# external GraspNet environment first; see the adapter README.

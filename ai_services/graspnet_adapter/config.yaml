@@ -1,0 +1,40 @@
+graspnet:
+  repo_root: /opt/third_party/graspnet-baseline
+  checkpoint_path: /opt/checkpoints/checkpoint-rs.tar
+  device: cuda:0
+  num_point: 20000
+  num_view: 300
+  num_angle: 12
+  num_depth: 4
+  cylinder_radius: 0.05
+  hmin: -0.02
+  hmax_list:
+  - 0.01
+  - 0.02
+  - 0.03
+  - 0.04
+  random_seed: 1234
+input:
+  min_object_points: 150
+  min_dense_scene_points: 12000
+  min_collision_scene_points: 800
+filters:
+  gripper_width_min_m: 0.005
+  gripper_width_max_m: 0.085
+  target_center_max_distance_m: 0.075
+  target_inner_min_points: 3
+  target_capture_finger_length_m: 0.06
+  collision_thresh: 0.01
+  collision_voxel_size_m: 0.01
+  collision_approach_dist_m: 0.05
+  nms_translation_thresh_m: 0.03
+  nms_rotation_thresh_deg: 30.0
+  top_n: 50
+sampling:
+  mode: target_stratified
+  core_radius_m: 0.018
+  context_radius_m: 0.1
+  core_fraction: 0.4
+  context_fraction: 0.4
+  background_fraction: 0.2
+  object_support_radius_m: 0.008

@@ -1,0 +1,5 @@
+Flask>=3.0,<4
+numpy>=1.24
+PyYAML>=6.0
+# Keep the OpenCV build that already works on your RK3588.
+# Do not blindly replace it with pip opencv-python.

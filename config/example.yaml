@@ -1,0 +1,27 @@
+# Copy to config/site.local.yaml; then run scripts/configure.py.
+# Empty repo_root uses this checkout's absolute path ON THE CURRENT MACHINE.
+repo_root: ""
+
+services:
+  grounded_sam2_url: http://ai-server.local:8090
+  graspnet_url: http://ai-server.local:8091
+  camera_url: http://camera-host.local:8080
+
+calibration:
+  # These confirmations describe calibration, never enable robot execution.
+  homography_configured: false
+  homography_npy_path: ""
+  geometry_confirmed: false
+  table_z_m: null
+  # Empty uses rk3588_camera_service/camera_intrinsics.npz.
+  camera_intrinsics_npz_path: ""
+  camera_device: 0
+
+models:
+  grounded_sam2_repo_root: /opt/third_party/Grounded-SAM-2
+  # The following three paths are relative to grounded_sam2_repo_root.
+  sam2_checkpoint: checkpoints/sam2.1_hiera_large.pt
+  grounding_dino_config: grounding_dino/groundingdino/config/GroundingDINO_SwinT_OGC.py
+  grounding_dino_checkpoint: gdino_checkpoints/groundingdino_swint_ogc.pth
+  graspnet_repo_root: /opt/third_party/graspnet-baseline
+  graspnet_checkpoint: /opt/checkpoints/checkpoint-rs.tar

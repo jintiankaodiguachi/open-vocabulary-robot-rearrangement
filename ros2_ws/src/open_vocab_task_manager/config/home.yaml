@@ -1,0 +1,71 @@
+open_vocab_home_executor:
+  ros__parameters:
+    # Deterministic HOME is joint-space, not Cartesian IK.
+    planning_group: "manipulator"
+    joint_states_topic: "/joint_states"
+    arm_joint_names:
+      - "joint_1"
+      - "joint_2"
+      - "joint_3"
+      - "joint_4"
+      - "joint_5"
+      - "joint_6"
+      - "joint_7"
+
+    motion_plan_service: "/plan_kinematic_path"
+    get_planning_scene_service: "/get_planning_scene"
+    state_validity_service: "/check_state_validity"
+    execute_trajectory_action: "/execute_trajectory"
+    trajectory_execution_event_topic: "/trajectory_execution_event"
+
+    planner_id: "RRTConnectkConfigDefault"
+    planning_attempts: 5
+    allowed_planning_time_s: 5.0
+
+    # Home is intentionally conservative. It is not a performance-critical motion.
+    velocity_scaling: 0.08
+    acceleration_scaling: 0.06
+    max_joint_state_age_s: 0.50
+    execution_timeout_s: 60.0
+
+    goal_joint_tolerance_rad: 0.008
+    already_home_tolerance_rad: 0.035
+    final_home_tolerance_rad: 0.045
+
+    require_state_validity_service: true
+
+    # HOME no longer depends on /open_vocab/grasp/plan_latest to create the table.
+    # If grasp_table is absent, HomeExecutor inserts this static table into MoveIt.
+    ensure_table_collision_object: true
+    require_table_collision_object: true
+    apply_planning_scene_service: "/apply_planning_scene"
+    table_object_id: "grasp_table"
+    table_frame: "base_link"
+
+    # Original development-environment examples; measure the local table and keep
+    # these values synchronized with grasp_planner.yaml before real execution.
+    table_center_x_m: 0.500
+    table_center_y_m: 0.000
+    table_physical_top_z_m: -0.031
+    table_collision_surface_offset_m: -0.002
+    table_size_x_m: 0.760
+    table_size_y_m: 0.800
+    table_size_z_m: 0.040
+
+    # Recommended workflow: put the robot in your safe initial posture once, then call
+    # /open_vocab/home/capture_current. This file persists the 7 joint values.
+    home_pose_path: "/opt/open-vocabulary-robot-rearrangement/perception/system_state/home_pose.json"
+
+    # Optional reproducible fallback. Leave empty when using the capture file.
+    # Example: [0.0, 0.3, 3.14, -1.5, 0.0, 1.2, 1.57]
+    # Humble compatibility sentinel: exactly 7 values means configured; one value means disabled.
+    home_joint_positions: [0.0]
+
+    # Master launch overrides this using enable_real_execution.
+    enable_home_execution: false
+
+    capture_service: "/open_vocab/home/capture_current"
+    go_service: "/open_vocab/home/go"
+    abort_service: "/open_vocab/home/abort"
+    status_service: "/open_vocab/home/status"
+    status_topic: "/open_vocab/home/status_topic"

@@ -1,0 +1,7 @@
+Flask>=3.0,<4
+# Add these to the upstream Grounded-SAM-2 CUDA environment; this is not
+# a complete lockfile for PyTorch, GroundingDINO, SAM 2, NumPy, or OpenCV.
+requests>=2.31
+PyYAML>=6.0
+pycocotools>=2.0.7
+Pillow>=10.0

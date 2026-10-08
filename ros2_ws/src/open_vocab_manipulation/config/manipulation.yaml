@@ -1,0 +1,110 @@
+open_vocab_pick_executor:
+  ros__parameters:
+    # ==================== Files produced by your existing pipeline ====================
+    grasp_plan_json_path: "/opt/open-vocabulary-robot-rearrangement/perception/grasp_plans/latest_grasp_plan.json"
+    local_result_json_path: "/opt/open-vocabulary-robot-rearrangement/perception/local_outputs/latest_local_result.json"
+
+    # Prepare must use a recent grasp plan / baseline perception.
+    max_plan_age_s: 120.0
+    max_local_result_age_s: 120.0
+    # Fast demo mode: skip the second wrist-camera observation at pregrasp.
+    # Set true later when you re-enable dynamic source revalidation.
+    require_source_revalidation: false
+    # Used only when require_source_revalidation=true.
+    max_revalidation_age_s: 3.0
+
+    # ==================== MoveIt / Kinova ====================
+    base_frame: "base_link"
+    planning_group: "manipulator"
+    goal_link: "end_effector_link"
+    joint_states_topic: "/joint_states"
+    arm_joint_names:
+      - "joint_1"
+      - "joint_2"
+      - "joint_3"
+      - "joint_4"
+      - "joint_5"
+      - "joint_6"
+      - "joint_7"
+
+    compute_ik_service: "/compute_ik"
+    motion_plan_service: "/plan_kinematic_path"
+    cartesian_path_service: "/compute_cartesian_path"
+    get_planning_scene_service: "/get_planning_scene"
+    state_validity_service: "/check_state_validity"
+    execute_trajectory_action: "/execute_trajectory"
+    trajectory_execution_event_topic: "/trajectory_execution_event"
+    require_state_validity_service: true
+    table_object_id: "grasp_table"
+
+    planner_id: "RRTConnectkConfigDefault"
+    planning_attempts: 3
+    allowed_planning_time_s: 3.0
+    ik_timeout_s: 0.35
+
+    # Deliberately lower than planner preview speed for first hardware execution.
+    velocity_scaling: 0.06
+    acceleration_scaling: 0.05
+    cartesian_velocity_scaling: 0.03
+    cartesian_acceleration_scaling: 0.03
+    cartesian_max_step_m: 0.003
+    cartesian_jump_threshold: 0.0
+    min_cartesian_fraction: 0.995
+
+    max_single_joint_delta_rad: 2.80
+    max_joint_l1_delta_rad: 8.50
+    max_joint_state_age_s: 0.25
+    execution_timeout_s: 45.0
+
+    # ==================== HARD SAFETY LOCKS ====================
+    # Stage A: set only enable_arm_execution=true after RViz/table verification.
+    enable_arm_execution: false
+    # Stage B: only after several successful pregrasp motions, set this true.
+    allow_approach_dry_run: false
+    # Stage C: only after dry-run is verified on real hardware.
+    enable_gripper_execution: false
+    enable_grasp_and_lift: false
+    # When doing the optional dry-run, open the 2F-85 before Cartesian approach so
+    # grasp_and_lift can safely close directly from AT_GRASP_DRY.
+    dry_run_open_gripper: true
+
+    # ==================== Robotiq 2F-85 ====================
+    # GraspNet width is metres; Kortex GripperCommand.position is a controller
+    # joint coordinate (~0.0 open -> ~0.8 closed). Do NOT feed width_m directly.
+    max_gripper_width_m: 0.085
+    # Reject candidates too close to mechanical opening limit. This rejects your
+    # ~84.2 mm apple and preserves real tolerance for calibration/model error.
+    min_gripper_width_reserve_m: 0.004
+
+    gripper_action: "/robotiq_gripper_controller/gripper_cmd"
+    gripper_open_position: 0.0
+    gripper_close_position: 0.80
+    # ros2_kortex documents 0..100-style max effort for this controller path.
+    # Start conservative; increase only if grasp slip proves it necessary.
+    gripper_max_effort: 40.0
+    gripper_timeout_s: 8.0
+    empty_close_position_threshold: 0.76
+    # False for initial experiments: log evidence but do not suppress lift solely
+    # on the controller's stall semantics. Turn true after verifying your driver.
+    require_gripper_object_evidence: false
+
+    # ==================== Optional source revalidation ====================
+    # The service remains available, but FAST_STATIC_DEMO does not require it.
+    local_perception_service: "/open_vocab/local_perception/trigger"
+    local_perception_timeout_s: 15.0
+    source_revalidate_max_xy_m: 0.025
+    source_revalidate_max_xyz_m: 0.035
+    source_revalidate_min_valid_depth_ratio: 0.80
+    source_revalidate_min_cloud_points: 150
+
+    # ==================== Execution verification ====================
+    pregrasp_position_tolerance_m: 0.015
+    grasp_position_tolerance_m: 0.012
+    orientation_tolerance_deg: 10.0
+    lift_distance_m: 0.10
+    lift_position_tolerance_m: 0.020
+
+    # ==================== Audit / status ====================
+    status_topic: "/open_vocab/pick/status"
+    latest_execution_json_path: "/opt/open-vocabulary-robot-rearrangement/perception/manipulation_logs/latest_pick_execution.json"
+    execution_history_jsonl_path: "/opt/open-vocabulary-robot-rearrangement/perception/manipulation_logs/pick_execution_history.jsonl"

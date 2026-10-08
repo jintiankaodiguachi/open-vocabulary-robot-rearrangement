@@ -1,0 +1,8 @@
+# This is a schema, NOT an identity or previously measured calibration.
+# Transform maps camera optical coordinates INTO the wrist parent frame.
+# Copy to config/handeye.local.yaml and fill in your measured transform.
+calibrated: false
+parent_frame: spherical_wrist_2_link
+child_frame: camera_color_optical_frame
+translation_m: [null, null, null]
+quaternion_xyzw: [null, null, null, null]

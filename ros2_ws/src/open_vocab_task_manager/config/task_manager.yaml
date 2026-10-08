@@ -1,0 +1,112 @@
+open_vocab_task_manager:
+  ros__parameters:
+    rearrange_action_name: "/open_vocab/rearrange"
+    task_status_topic: "/open_vocab/task/status"
+
+    latest_task_json_path: "/opt/open-vocabulary-robot-rearrangement/perception/task_logs/latest_task.json"
+    task_history_jsonl_path: "/opt/open-vocabulary-robot-rearrangement/perception/task_logs/task_history.jsonl"
+
+    # Existing Stage-2A source pipeline. TaskManager invokes this exact, already-validated
+    # pipeline so scene_bridge continues consuming the same outputs/latest_scene.json.
+    stage2a_root: "/opt/open-vocabulary-robot-rearrangement/perception/robot_host"
+    stage2a_cli: "cli.py"
+    stage2a_config: "config.yaml"
+    stage2a_python: "python3"
+    # Match the user's validated manual command exactly: python3 cli.py <query>.
+    # Enable these only if the local cli.py actually supports the optional flags.
+    stage2a_pass_config_arg: false
+    stage2a_pass_json_flag: false
+    stage2a_scene_json: "outputs/latest_scene.json"
+    stage2a_timeout_s: 30.0
+    min_source_confidence: 0.45
+
+    # V10.3 observation synchronization:
+    # auto = use explicit completion event if a publisher exists; otherwise use
+    # /joint_states motion-start + settle detection (compatible with current observer).
+    observation_done_topic: "/open_vocab/observation_motion_done"
+    observation_completion_mode: "event"
+    observation_timeout_s: 60.0
+    observation_start_timeout_s: 25.0
+    observation_settle_time_s: 0.80
+    post_observation_settle_delay_s: 0.25
+
+    joint_states_topic: "/joint_states"
+    observation_joint_names:
+      - "joint_1"
+      - "joint_2"
+      - "joint_3"
+      - "joint_4"
+      - "joint_5"
+      - "joint_6"
+      - "joint_7"
+    observation_motion_start_delta_rad: 0.015
+    observation_velocity_start_rad_s: 0.020
+    observation_settle_position_delta_rad: 0.003
+    observation_settle_velocity_rad_s: 0.015
+    observation_joint_state_max_age_s: 1.0
+
+    required_observer_nodes:
+      - "/open_vocab_scene_bridge"
+      - "/open_vocab_observation_pose"
+      - "/open_vocab_moveit_observer"
+
+    # Kept only for backward-compatible parameter loading; no longer gates preflight.
+    require_observation_publisher: false
+
+    # Product-level HOME/initial point. Nominal successful task cycle is:
+    # HOME -> perceive/pick/place -> HOME.
+    home_go_service: "/open_vocab/home/go"
+    home_abort_service: "/open_vocab/home/abort"
+    home_status_service: "/open_vocab/home/status"
+    home_at_start: true
+    home_at_end: true
+
+    # Safety default: do NOT automatically move HOME after an unknown failure.
+    # The robot may still hold an object or be near an obstacle.
+    return_home_on_failure: false
+
+    pick_reset_service: "/open_vocab/pick/reset"
+    place_reset_service: "/open_vocab/place/reset"
+    local_perception_service: "/open_vocab/local_perception/trigger"
+    grasp_plan_service: "/open_vocab/grasp/plan_latest"
+    pick_prepare_service: "/open_vocab/pick/prepare"
+    pick_move_pregrasp_service: "/open_vocab/pick/move_pregrasp"
+    pick_dry_run_service: "/open_vocab/pick/approach_dry_run"
+    pick_grasp_lift_service: "/open_vocab/pick/grasp_and_lift"
+    pick_abort_service: "/open_vocab/pick/abort"
+    pick_status_service: "/open_vocab/pick/status"
+
+    place_locate_service: "/open_vocab/place/locate_destination"
+    place_prepare_service: "/open_vocab/place/prepare"
+    place_move_preplace_service: "/open_vocab/place/move_preplace"
+    place_release_service: "/open_vocab/place/release_and_retreat"
+    place_verify_service: "/open_vocab/place/verify"
+    place_abort_service: "/open_vocab/place/abort"
+    place_status_service: "/open_vocab/place/status"
+
+    service_discovery_timeout_s: 8.0
+    reset_timeout_s: 8.0
+    home_motion_timeout_s: 90.0
+    local_perception_timeout_s: 45.0
+    grasp_plan_timeout_s: 45.0
+    pick_prepare_timeout_s: 15.0
+    pick_motion_timeout_s: 90.0
+    place_locate_timeout_s: 35.0
+    place_prepare_timeout_s: 45.0
+    place_motion_timeout_s: 90.0
+    place_verify_timeout_s: 35.0
+    parameter_service_timeout_s: 8.0
+
+    # Open-vocabulary destination geometry policy. This is NOT a semantic whitelist.
+    # Unknown destination text falls back to generic calibrated PlaceExecutor geometry.
+    # The launch file overrides this with the installed config path.
+    destination_profiles_path: ""
+    place_executor_node_name: "/open_vocab_place_executor"
+
+    # Keep false for the first integration run if network health endpoints are not stable.
+    # The actual perception/planning services still fail closed at their own stages.
+    require_external_health: false
+    external_health_urls:
+      - "http://ai-server.local:8090/health"
+      - "http://ai-server.local:8091/health"
+    external_health_timeout_s: 2.0
