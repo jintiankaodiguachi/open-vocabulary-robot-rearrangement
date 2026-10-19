@@ -6,7 +6,7 @@ An open-vocabulary tabletop manipulation system integrating global visual ground
 active wrist-camera observation, local RGB-D perception, 6-DoF grasp candidates,
 robot-aware feasibility checks, MoveIt 2, and ROS 2 task orchestration.
 
-输入 **Source Object** 与 **Destination** 两个文本查询，系统在桌面内定位物体并完成抓取、放置和返回 HOME。
+输入 任意开放词汇**Source Object** 与 **Destination** 两个文本查询，系统在桌面内自动定位物体并完成抓取、放置和返回 HOME。
 
 ```text
 HOME → Global Grounding → Active Observation → Local RGB-D
