@@ -6,11 +6,7 @@ An open-vocabulary tabletop manipulation system integrating global visual ground
 active wrist-camera observation, local RGB-D perception, 6-DoF grasp candidates,
 robot-aware feasibility checks, MoveIt 2, and ROS 2 task orchestration.
 
-输入 **Source Object** 与 **Destination** 两个文本查询，系统在已标定桌面内重新定位物体并完成抓取、放置和返回 HOME。目标位置由视觉感知获得；容器高度、工具几何和工作空间由人工标定。
-
-> **Demo：** 真机视频已录制，正在剪辑，公开链接及精选 GIF 待补充。目前仓库没有演示视频、成功率或耗时基准数据。演示建议见 [docs/demo.md](docs/demo.md)。
->
-> **源码范围：** 本次包含六个 ROS 2 包、机器人主机全局感知程序、两类 AI 服务适配层和 RK3588 相机服务。Web UI、原生 MJPEG 预览版本、自定义机器人 MoveIt 配置及现场标定不在这次提供的文件中。
+输入 **Source Object** 与 **Destination** 两个文本查询，系统在桌面内定位物体并完成抓取、放置和返回 HOME。
 
 ```text
 HOME → Global Grounding → Active Observation → Local RGB-D
@@ -22,7 +18,7 @@ HOME → Global Grounding → Active Observation → Local RGB-D
 
 系统采用 **Global-to-Local Active Perception**：全局 HIK RGB 相机与 Grounded-SAM-2 完成语义搜索，通过桌面 Homography 得到目标的粗略 `base_link` XY；机械臂随后主动调整腕部 D435i 的观察位，利用对齐深度与目标分割生成局部目标点云和场景点云，再将 GraspNet 候选转换为机器人可执行的动作。
 
-项目的工程重点是感知到动作的系统集成：图像空间一致性、SE(3) 坐标变换、夹爪与抓取中心几何、可达性和碰撞约束、ROS 2 异步编排、多机 HTTP 服务以及真实机器人执行。**Grounded-SAM-2、GroundingDINO、SAM 2 与 GraspNet 为第三方模型，项目没有训练这些模型。**
+项目的工程重点是感知到动作的系统集成：图像空间一致性、SE(3) 坐标变换、夹爪与抓取中心几何、可达性和碰撞约束、ROS 2 异步编排、多机 HTTP 服务以及真实机器人执行。
 
 ## Key Features
 
@@ -81,7 +77,7 @@ flowchart LR
 | Kinova Gen3 7DoF + Robotiq 2F-85 | 机械臂与夹爪 |
 | HIK RGB + RK3588 | 全局去畸变 RGB 与 HTTP 帧服务 |
 | Intel RealSense D435i | 腕部 RGB-D 局部感知 |
-| RTX A6000 | 作者实验中的远程模型推理平台，服务代码不强制限定该型号 |
+| RTX A6000 | 实验中的远程模型推理平台，服务代码不强制限定该型号 |
 | Ubuntu 机器人主机 | ROS 2 Humble、MoveIt 2、感知客户端与任务执行 |
 
 ## Perception and Grasp Planning
@@ -318,5 +314,3 @@ python3 -m unittest discover -s tests -v
 ## Third-party Models and License
 
 Grounded-SAM-2 and GraspNet are third-party models. Follow their original licenses and installation instructions. No upstream model repository, checkpoint, dataset, robot-driver repository, or Docker image is bundled here. See [third_party/README.md](third_party/README.md), including GraspNet baseline's noncommercial research terms.
-
-六个 ROS 包已有 `Apache-2.0` 元数据声明。其他文件的整库授权仍待作者确认，当前 [LICENSE](LICENSE) 说明该范围，未将第三方模型或尚未声明许可的文件重新授权。
